@@ -70,13 +70,23 @@ contract Raffle {
     //1. Get a random number using chainlink VRF
     //2. Used the random number to pick a player
     //3. Be automatically called
-
+   /**
+    * the random words required
+    * 1. the address of the vrfcoordinator (based on diff network)
+    * 2. the gas lane (base on diff network get from chainlink)
+    * 3. the subscribtion id
+    * 4. call back gas limit
+    */
     function pickWinner() external {
         if((block.timestamp - s_timestamp)> i_interval){
             s_timestamp = block.timestamp;
         }else{
             revert();
         }
+
+        uint256 requestId =  i_vrfCoordinator.requestRandomWords(
+            
+        )
     }
 
     function getEnterRaffleFee() external view returns(uint256){
