@@ -119,4 +119,11 @@ contract Raffle is VRFConsumerBaseV2{
     function getEnterRaffleFee() external view returns(uint256){
         return i_enterRaffleFee;
     }
+
+
+    //why we need to create checkupkeep function?
+    //Okay it's because that we have to extend the interface, and this is the function 
+    //that we should override
+    //let's back to the question that why we still have to count the time whjen we have the chainlink to set the timer for us, because except the time factor, we still have
+    // other factor like the balace or other things we should contcer about off the chain, so it's ok to have a seperate limit.
 }
