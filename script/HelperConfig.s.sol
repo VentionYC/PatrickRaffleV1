@@ -5,7 +5,7 @@ import {Script} from "forge-std/Script.sol";
 import {VRFCoordinatorV2Mock} from "@chainlink/contracts/v0.8/mocks/VRFCoordinatorV2Mock.sol";
 
 contract HelperConfig is Script {
-    uint256 private constant SEPOLIA_CHAIN_ID = 11155111;
+    uint256 public constant SEPOLIA_CHAIN_ID = 11155111;
 
     struct NetworkConfig {
                 uint256 enterRaffleFee;

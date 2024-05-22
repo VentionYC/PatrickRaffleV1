@@ -18,7 +18,7 @@ contract DeployRaffle is Script {
 
         // some of the raffle input parameter above in the constructor, will depened on what chain we are using, 
         // so we can create Helperconfig to help with no matter what chain we are deploy to, we are good to go
-    function run() external returns (Raffle) {
+    function run() external returns (Raffle,HelperConfig) {
         //Based on the active Network, can have diff config
         HelperConfig helperConfig = new HelperConfig();
         (
@@ -40,6 +40,6 @@ contract DeployRaffle is Script {
             gasLimit
         );
         vm.stopBroadcast();
-        return raffle;
+        return (raffle, helperConfig);
     }
 }
