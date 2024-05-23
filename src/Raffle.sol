@@ -4,16 +4,18 @@ import {VRFCoordinatorV2Interface} from "@chainlink/contracts/v0.8/vrf/interface
 import {VRFConsumerBaseV2} from "@chainlink/contracts/v0.8/vrf/VRFConsumerBaseV2.sol";
 import {AutomationCompatibleInterface} from "@chainlink/contracts/v0.8/interfaces/AutomationCompatibleInterface.sol";
 
-error theEnterFeeisNotEnough();
-error theWinnerWithdrawFailed();
+
+
+
+contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface{
+//the cumtom error should be inside in order for other contract to access or say test
+    error theEnterFeeisNotEnough();
+    error theWinnerWithdrawFailed();
 error Raffle_UpkeepNotNeeded(
     uint256 contractBalance,
     uint256 userCount
 );
 error Raffle_RaffleNotOpen();
-
-
-contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface{
 
     enum RaffleState {
         OPEN,
@@ -172,4 +174,8 @@ contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface{
     function getRaffleState() external view returns(RaffleState){
         return s_raffleState;
     } 
+
+    function getUserList() external view returns(address payable[] memory){
+        return s_userAddress;
+    }
 }
