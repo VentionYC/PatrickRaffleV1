@@ -110,10 +110,54 @@ Error (2271): Built-in binary operator == cannot be applied to types uint256 and
         
     }
 
-//    function testRaffleEnterState() public returns(bool){
+    //you can try the blow test, it failed but I still don't know the reason
+    //todo
 
+//    function testRaffleEnterState() public returns(bool){
+//         vm.prank(PLAYER);
+//         //first we have to meke sure that enough time have passed
+//         //the foundry cheat code\
+//         //vm.warp() set the blo k time
+//         //vm.roll set the block number     
+
+//         vm.warp(block.timestamp + interval + 1);
+//         vm.roll(block.number +1);
+
+//         bytes memory performData = "";
+//         raffle.performUpkeep(performData);
+//         vm.expectRevert(Raffle.Raffle_RaffleNotOpen.selector);
+
+//         raffle.enterRaffle{value: enterRaffleFee}();
+//         //still need to use the funtion in the raffle which have 
+//         //the ability to set the raffle statue to calculating.
+
+//         //so the next action should be how we can call the preform upkeep function
+//         //in order to real test the status of the opening, we first have to make sure
+//         //that the checkUpkeep is passed in the code.c
 //    }
 
+    function testRaffleEnterState() public{
+        //first we have to simuliate the real situation
+        //create a player and enter the raffle
+        vm.prank(PLAYER);
+        raffle.enterRaffle{value: enterRaffleFee} ();
+        //and let's assume enough time have passed
+        vm.warp(block.timestamp + interval + 1);
+        //this step is not nessary to do but ...
+        vm.roll(block.number + 1);
+
+        //now let call the perform upkeep, 
+        //the condition should be enought to pass the checkupkeep()
+        raffle.performUpkeep("");
+        //then the next player will be enter
+        //prank will create the new player address
+        vm.prank(PLAYER);
+        vm.expectRevert(Raffle.Raffle_RaffleNotOpen.selector);
+        raffle.enterRaffle{value: enterRaffleFee} ();
+
+
+
+    }
 
     function testIncreaseUserRecordWhenEntered() public {
         vm.prank(PLAYER);
@@ -121,6 +165,20 @@ Error (2271): Built-in binary operator == cannot be applied to types uint256 and
         address payable[] memory user = raffle.getUserList();
         assert (user[0] == PLAYER);
 
+    }
+
+    function testEnterUserEvent() public {
+        vm.prank(PLAYER);
+        //1.leave the parameter empty means check it all?
+        //https://book.getfoundry.sh/cheatcodes/expect-emit
+        vm.expectEmit();
+        //2.Emit the event we are supposed to see during trhe next call(I mean the reall funciton call)
+        //RealClassName.RealEventName
+        emit Raffle.EnteredUser(address(PLAYER));
+        //3.Let's call the event, 
+        //instance of class.function
+        //have to have enought fund, this is a payable method
+        raffle.enterRaffle{value: enterRaffleFee}();
     }
 
 
