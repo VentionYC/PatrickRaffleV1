@@ -1,36 +1,31 @@
-# what this project is about
-User to use(pay fee) --> (After " " time)fee for (randomly picked)winner to draw (programatically)
-# Useful resouces
- * Chain link VRF -> Get a randomness number
- * Chainlink Automation -> Time based trigger for excute a method
 
- # Payable modifier
- * It's meant for receive but not send Ether, address.. function...
+# Solidity formate
+ ## Payable modifier
+    * It's meant for receive but not send Ether, address.. function...
+ ## Layout of Contract:
+ 1. version
+ 2. imports
+ 3. errors
+ 4. interfaces, libraries, contracts
+ 5. Type declarations
+ 6. State variables
+ 7. Events
+ 8. Modifiers
+ 9. Functions
 
- # Layout of Contract:
-// version
-// imports
-// errors
-// interfaces, libraries, contracts
-// Type declarations
-// State variables
-// Events
-// Modifiers
-// Functions
+ ## Layout of Functions:
+ 1. constructor
+ 2. receive function (if exists)
+ 3. fallback function (if exists)
+ 4. external
+ 5. public
+ 6. internal
+ 7. private
+ 8. view & pure functions
 
-# Layout of Functions:
-// constructor
-// receive function (if exists)
-// fallback function (if exists)
-// external
-// public
-// internal
-// private
-// view & pure functions
-
-# Test
-1. Write some deploy scripts
-2. Write some tests
-    1. Work on a local chain
-    2. Forked Testnet
-    3. Forked Mainnet
+# Foundry
+ ## Function
+    * makeAddr
+ ## Cheatcode
+  ### Give me some money!
+    * vm.deal(address, uint256)

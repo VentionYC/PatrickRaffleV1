@@ -4,6 +4,7 @@ pragma solidity ^0.8.18;
 import {Script} from "forge-std/Script.sol";
 import {Raffle} from "../src/Raffle.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
+import {CreateSub} from "./Interactions.s.sol";
 
 contract DeployRaffle is Script {
     //we need to create a run function
@@ -29,6 +30,16 @@ contract DeployRaffle is Script {
                 uint64 subscribtionId,
                 uint32 gasLimit
         )= helperConfig.actviceNetWorkConfig();
+
+        //if the subID passed from helper is 0, we have to create the sub ID in the script
+        if(subscribtionId == 0){
+            //let's cratet the sub id here
+            CreateSub createSub = new CreateSub();
+            subscribtionId = createSub.createSubscription(vrfCoordinator);
+            // Now we have to fund it!!!
+            // let's crate another contract in interaction ?
+    
+        }
 
         vm.startBroadcast();
         Raffle raffle = new Raffle(

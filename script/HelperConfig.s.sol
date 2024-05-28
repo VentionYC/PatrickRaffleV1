@@ -81,20 +81,20 @@ contract HelperConfig is Script {
             );
         vm.stopBroadcast();
 
-        uint64 subId = vrfCoordinatorV2Mock.createSubscription();
+        //uint64 subId = vrfCoordinatorV2Mock.createSubscription();
 
         NetworkConfig memory netWorkConfig = NetworkConfig({
             enterRaffleFee: 0.01 ether,
             interval: 30, //sec
             gasLane: 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c,//doesn't matter, leave it like this
             vrfCoordinator: address(vrfCoordinatorV2Mock),
-            subscribtionId: subId, //our script will add this????
+            subscribtionId: 0, //our script will add this????
             gasLimit: 500000
 
         });
 
 
-        vrfCoordinatorV2Mock.addConsumer(subId, address(this));
+        //vrfCoordinatorV2Mock.addConsumer(subId, address(this));
 
 
         return netWorkConfig;

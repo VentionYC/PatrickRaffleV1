@@ -7,12 +7,6 @@ import {Test, console} from "forge-std/Test.sol";
 import {HelperConfig} from "../../script/HelperConfig.s.sol";
 
 contract RaffleTest is Test {
-
-        //need some fake user to interact with raffle
-        //Description
-        // Creates an address derived from the provided name.
-
-        // A label is created for the derived address with the provided name used as the label value.
     Raffle raffle;
     HelperConfig helper;
     uint256 enterRaffleFee;
@@ -37,8 +31,6 @@ contract RaffleTest is Test {
                  subscribtionId,
                  gasLimit
         )= helper.actviceNetWorkConfig();
-
-        //give palyer some money
         vm.deal(PLAYER, STARTING_BALANCE);
     }
 
