@@ -41,7 +41,11 @@ contract FundSub is Script{
     function fundSubscriptionUsingConfig() public {
         //need sub id
         //need vrf coordiantor v2 address
-        //Link address7
+        //Link address -> Let's add the link token into our Helper config
+
+        HelperConfig helperConfig = new HelperConfig();
+        ( , , , address vrfCoordinator, 
+                uint64 subscribtionId, )= helperConfig.actviceNetWorkConfig();
 
     }
     
