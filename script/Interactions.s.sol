@@ -4,6 +4,7 @@ import {Script, console} from "forge-std/Script.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
 import {VRFCoordinatorV2Mock} from "@chainlink/contracts/v0.8/mocks/VRFCoordinatorV2Mock.sol";
 import {LinkToken} from "../test/mocks/LinkToken.sol";
+import {DevOpsTools} from "lib/foundry-devops/src/DevOpsTools.sol";
 contract CreateSub is Script{
     //Doing like this is for the sack of the modularity
 
@@ -88,6 +89,28 @@ contract FundSub is Script{
 
 contract AddCustomer is Script {
     function run() external {
-        
+        //get most recent deploy contract
+        address raffle = DevOpsTools.get_most_recent_deployment(
+            "Raffle", 
+            block.chainid);
+
+        addCustomerUsingConfig(raffle);
     }
+
+    function addCustomerUsingConfig(address owner) public{
+
+        HelperConfig helperConfig = new HelperConfig();
+        ( , , ,address vrfCoordinator 
+            ,uint64 subscribtionId , , )= helperConfig.actviceNetWorkConfig();
+
+        addCustomer(vrfCoordinator, subscribtionId, owner);
+    }
+
+    function addCustomer(address vrfCoordinator,
+                         uint64 subId,
+                         address contractAddress) public{
+                            vm.startBroadcast();
+                            VRFCoordinatorV2Mock(vrfCoordinator).addConsumer(subId, contractAddress);
+                            vm.stopBroadcast();
+                         }
 }

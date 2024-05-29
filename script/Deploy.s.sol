@@ -6,6 +6,7 @@ import {Raffle} from "../src/Raffle.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
 import {CreateSub} from "./Interactions.s.sol";
 import {FundSub} from "./Interactions.s.sol";
+import {AddCustomer} from "./Interactions.s.sol";
 
 contract DeployRaffle is Script {
     //we need to create a run function
@@ -38,11 +39,14 @@ contract DeployRaffle is Script {
             //let's cratet the sub id here
             CreateSub createSub = new CreateSub();
             FundSub fundSub = new FundSub();
+            
             subscribtionId = createSub.createSubscription(vrfCoordinator);
             // Now we have to fund it!!!
             // let's crate another contract in interaction ?
             fundSub.fundSubcription(vrfCoordinator,subscribtionId,link);
 
+            //now we have to add the customer
+            //addConsumer.addCustomerUsingConfig(vrfCoordinator,)
     
         }
 
@@ -56,7 +60,10 @@ contract DeployRaffle is Script {
             gasLimit
         );
         vm.stopBroadcast();
-        
+        //We add the consumer in the last steop
+        AddCustomer addConsumer = new AddCustomer();
+        addConsumer.addCustomer(vrfCoordinator,subscribtionId, address(raffle));
+
         return (raffle, helperConfig);
     }
 }
