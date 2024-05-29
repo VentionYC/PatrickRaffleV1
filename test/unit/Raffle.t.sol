@@ -15,6 +15,7 @@ contract RaffleTest is Test {
     address vrfCoordinator;
     uint64 subscribtionId;
     uint32 gasLimit;
+    address link;
     address public PLAYER = makeAddr("player");
     uint256 public constant STARTING_BALANCE = 10 ether;
 
@@ -29,7 +30,8 @@ contract RaffleTest is Test {
                  gasLane,
                  vrfCoordinator,
                  subscribtionId,
-                 gasLimit
+                 gasLimit,
+                 link
         )= helper.actviceNetWorkConfig();
         vm.deal(PLAYER, STARTING_BALANCE);
     }

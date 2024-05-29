@@ -5,6 +5,7 @@ import {Script} from "forge-std/Script.sol";
 import {Raffle} from "../src/Raffle.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
 import {CreateSub} from "./Interactions.s.sol";
+import {FundSub} from "./Interactions.s.sol";
 
 contract DeployRaffle is Script {
     //we need to create a run function
@@ -28,16 +29,20 @@ contract DeployRaffle is Script {
                 bytes32 gasLane,
                 address vrfCoordinator,
                 uint64 subscribtionId,
-                uint32 gasLimit
+                uint32 gasLimit,
+                address link
         )= helperConfig.actviceNetWorkConfig();
 
         //if the subID passed from helper is 0, we have to create the sub ID in the script
         if(subscribtionId == 0){
             //let's cratet the sub id here
             CreateSub createSub = new CreateSub();
+            FundSub fundSub = new FundSub();
             subscribtionId = createSub.createSubscription(vrfCoordinator);
             // Now we have to fund it!!!
             // let's crate another contract in interaction ?
+            fundSub.fundSubcription(vrfCoordinator,subscribtionId,link);
+
     
         }
 
@@ -51,6 +56,7 @@ contract DeployRaffle is Script {
             gasLimit
         );
         vm.stopBroadcast();
+        
         return (raffle, helperConfig);
     }
 }

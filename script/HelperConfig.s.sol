@@ -3,6 +3,7 @@ pragma solidity ^0.8.18;
 
 import {Script} from "forge-std/Script.sol";
 import {VRFCoordinatorV2Mock} from "@chainlink/contracts/v0.8/mocks/VRFCoordinatorV2Mock.sol";
+import {LinkToken} from "../test/mocks/LinkToken.sol";
 
 contract HelperConfig is Script {
     uint256 public constant SEPOLIA_CHAIN_ID = 11155111;
@@ -82,6 +83,7 @@ contract HelperConfig is Script {
             baseFee, 
             gasPriceLink
             );
+        LinkToken linkToken  = new LinkToken();
         vm.stopBroadcast();
 
         //uint64 subId = vrfCoordinatorV2Mock.createSubscription();
@@ -93,7 +95,7 @@ contract HelperConfig is Script {
             vrfCoordinator: address(vrfCoordinatorV2Mock),
             subscribtionId: 0, //our script will add this????
             gasLimit: 500000,
-            link: //we need to deploy a mocked link token?
+            link: address(linkToken)//we need to deploy a mocked link token?
             //Chainlink contract verion link?
 
         });
