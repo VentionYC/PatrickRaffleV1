@@ -75,7 +75,7 @@ Error (2271): Built-in binary operator == cannot be applied to types uint256 and
 
    }
 
-   ////////////////////////////////// START OF THE TEST //////////////////
+   ////////////////////////////////// Enter the raffle test //////////////////
    //Arrange//Act//Assert
     // Arrange: in this step, you set up the initial state and prepare everything 
     //needded for the test, this might include deploying contracts, 
@@ -175,5 +175,38 @@ Error (2271): Built-in binary operator == cannot be applied to types uint256 and
         raffle.enterRaffle{value: enterRaffleFee}();
     }
 
+    /////////////////////////////////////// Checkupkeep test/////////
+    //1. it should return false if the address have no balance
+    function testCheckUpkeepReturnsFalseIfTheAddressHaveNoBalance() public  {
+        //Arrange
+        vm.warp(block.timestamp + interval + 1);
+        vm.roll(block.number +1);
+
+        //Act
+        (bool upkeepNeeded, ) = raffle.checkUpkeep("");
+
+        //assert inside is ture, then pass
+        assert(!upkeepNeeded);
+    }
+
+    function testCheckUpkeepReturnFalseIfRaffleNotOpen() public {
+        //Arrange
+        //enough time have passed
+        //the address have enough balance
+        vm.prank(PLAYER);
+        raffle.enterRaffle{value: enterRaffleFee}();
+        vm.warp(block.timestamp + interval + 1);
+        vm.roll(block.number +1);
+        raffle.performUpkeep("");
+
+        //Act
+        (bool upkeepNeeded, ) = raffle.checkUpkeep("");
+
+        //assert inside is ture, then pass
+        assert(!upkeepNeeded);  
+    }
+
+
+    
 
 }
