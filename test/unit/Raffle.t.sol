@@ -206,6 +206,18 @@ Error (2271): Built-in binary operator == cannot be applied to types uint256 and
         assert(!upkeepNeeded);  
     }
 
+    function testCheckUpkeepReturnFalseIfNotEnoughTime() public {
+        //Arrange
+        vm.prank(PLAYER);
+        raffle.enterRaffle{value: enterRaffleFee} ();
+        vm.warp(block.timestamp + interval - 1);
+        vm.roll(block.number + 1);
+        
+        (bool upkeepNeeded, ) = raffle.checkUpkeep("");
+
+        assert(!upkeepNeeded);
+    }
+
 
     
 
