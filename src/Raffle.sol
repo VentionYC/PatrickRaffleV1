@@ -116,6 +116,7 @@ error Raffle_RaffleNotOpen();
         uint256 indexOfWinner = randomWords[0] % s_userAddress.length;
         address payable winner = s_userAddress[indexOfWinner];
         s_recentWinner = winner;
+        s_timestamp = block.timestamp;
 
         //.call -> more control over the error handling 
         //.transfer -> encounter en error dufing the transfer, it reverts the transaction entirely
@@ -166,6 +167,7 @@ error Raffle_RaffleNotOpen();
 
         s_raffleState = RaffleState.CALCULATING;
         uint256 requestId = pickWinner();
+        //the request ID is already emit by the requestrandomwords, this is just for the test showing
         emit RequestRaffleWinner(requestId);
 
 
@@ -178,4 +180,17 @@ error Raffle_RaffleNotOpen();
     function getUserList() external view returns(address payable[] memory){
         return s_userAddress;
     }
+
+    function getLengthOfTheUser() external view returns(uint256) {
+        return s_userAddress.length;
+    }
+
+    function getLastTimeStamp() external view returns(uint256){
+            return s_timestamp;
+    }
+
+    function getRecentWinner() external view returns(address){
+        return s_recentWinner;
+    }
+        
 }
