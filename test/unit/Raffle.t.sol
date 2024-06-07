@@ -6,18 +6,20 @@ import {Raffle} from "../../src/Raffle.sol";
 import {Test, console} from "forge-std/Test.sol";
 import {HelperConfig} from "../../script/HelperConfig.s.sol";
 import {Vm} from "forge-std/Vm.sol";
-import {VRFCoordinatorV2Mock} from "@chainlink/contracts/v0.8/mocks/VRFCoordinatorV2Mock.sol";
+import {VRFCoordinatorV2Mock} from "@chainlink/contracts/src/v0.8/mocks/VRFCoordinatorV2Mock.sol";
 
 contract RaffleTest is Test {
+    event EnteredUser(address indexed user);
     Raffle raffle;
     HelperConfig helper;
     uint256 enterRaffleFee;
     uint256 interval;
     bytes32 gasLane;
     address vrfCoordinator;
-    uint64 subscribtionId;
+    uint256 subscribtionId;
     uint32 gasLimit;
     address link;
+    uint256 privateKey;
     address public PLAYER = makeAddr("player");
     uint256 public constant STARTING_BALANCE = 10 ether;
 
@@ -41,7 +43,8 @@ contract RaffleTest is Test {
                  vrfCoordinator,
                  subscribtionId,
                  gasLimit,
-                 link
+                 link,
+                 privateKey
         )= helper.actviceNetWorkConfig();
         vm.deal(PLAYER, STARTING_BALANCE);
     }
@@ -175,10 +178,11 @@ Error (2271): Built-in binary operator == cannot be applied to types uint256 and
         vm.prank(PLAYER);
         //1.leave the parameter empty means check it all?
         //https://book.getfoundry.sh/cheatcodes/expect-emit
-        vm.expectEmit();
+        //vm.expectEmit();
+        vm.expectEmit(true, false, false, false, address(raffle));
         //2.Emit the event we are supposed to see during trhe next call(I mean the reall funciton call)
         //RealClassName.RealEventName
-        emit Raffle.EnteredUser(address(PLAYER));
+        emit EnteredUser(address(PLAYER));
         //3.Let's call the event, 
         //instance of class.function
         //have to have enought fund, this is a payable method
@@ -213,6 +217,7 @@ Error (2271): Built-in binary operator == cannot be applied to types uint256 and
         (bool upkeepNeeded, ) = raffle.checkUpkeep("");
 
         //assert inside is ture, then pass
+        console.log("the upkeepneed is ", upkeepNeeded);
         assert(!upkeepNeeded);  
     }
 

@@ -29,9 +29,10 @@ contract DeployRaffle is Script {
                 uint256 interval,
                 bytes32 gasLane,
                 address vrfCoordinator,
-                uint64 subscribtionId,
+                uint256 subscribtionId,
                 uint32 gasLimit,
-                address link
+                address link,
+                uint256 privateKey
         )= helperConfig.actviceNetWorkConfig();
 
         //if the subID passed from helper is 0, we have to create the sub ID in the script
@@ -43,7 +44,7 @@ contract DeployRaffle is Script {
             subscribtionId = createSub.createSubscription(vrfCoordinator);
             // Now we have to fund it!!!
             // let's crate another contract in interaction ?
-            fundSub.fundSubcription(vrfCoordinator,subscribtionId,link);
+            fundSub.fundSubcription(vrfCoordinator,subscribtionId,link,privateKey);
 
             //now we have to add the customer
             //addConsumer.addCustomerUsingConfig(vrfCoordinator,)
@@ -62,7 +63,7 @@ contract DeployRaffle is Script {
         vm.stopBroadcast();
         //We add the consumer in the last steop
         AddCustomer addConsumer = new AddCustomer();
-        addConsumer.addCustomer(vrfCoordinator,subscribtionId, address(raffle));
+        addConsumer.addCustomer(vrfCoordinator,subscribtionId, address(raffle),privateKey);
 
         return (raffle, helperConfig);
     }

@@ -2,20 +2,24 @@
 pragma solidity ^0.8.18;
 
 import {Script} from "forge-std/Script.sol";
-import {VRFCoordinatorV2Mock} from "@chainlink/contracts/v0.8/mocks/VRFCoordinatorV2Mock.sol";
+import {VRFCoordinatorV2Mock} from "@chainlink/contracts/src/v0.8/mocks/VRFCoordinatorV2Mock.sol";
 import {LinkToken} from "../test/mocks/LinkToken.sol";
 
 contract HelperConfig is Script {
     uint256 public constant SEPOLIA_CHAIN_ID = 11155111;
+    address public constant SEPOLIA_VRF_2_5_COORDINATOR = 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B;
+    bytes32 public constant SEPOLIA_VRF_2_5_GAS_LANE = 0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae;
+    uint256 public constant ANVIL_PRIVATE_KEY = 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
 
     struct NetworkConfig {
                 uint256 enterRaffleFee;
                 uint256 interval;
                 bytes32 gasLane;
                 address vrfCoordinator;
-                uint64 subscribtionId;
+                uint256 subscribtionId;
                 uint32 gasLimit;
                 address link;
+                uint256 privateKey;
 
     }
 
@@ -47,16 +51,16 @@ contract HelperConfig is Script {
      * ChainLink_COORDINATOR_URL: https://docs.chain.link/vrf/v2/subscription/supported-networks
      */
     //This is the test net config 
-    function getSepoliaEthConfig() public pure returns (NetworkConfig memory) {
+    function getSepoliaEthConfig() public view returns (NetworkConfig memory) {
         return NetworkConfig({
             enterRaffleFee: 0.01 ether,
             interval: 30, //sec
-            gasLane: 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c,
-            vrfCoordinator: 0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625,
-            subscribtionId: 0, //Needed for update with the real subId!
+            gasLane: SEPOLIA_VRF_2_5_GAS_LANE,
+            vrfCoordinator: SEPOLIA_VRF_2_5_COORDINATOR,
+            subscribtionId: 17567876347256142007997470531990983328881883535997831679022352995396763935343, //Needed for update with the real subId!
             gasLimit: 500000,
-            link: 0x779877A7B0D9E8603169DdbD7836e478b4624789
-
+            link: 0x779877A7B0D9E8603169DdbD7836e478b4624789,
+            privateKey: vm.envUint("PRIVATE_KEY")
         });
     }
 
@@ -95,8 +99,9 @@ contract HelperConfig is Script {
             vrfCoordinator: address(vrfCoordinatorV2Mock),
             subscribtionId: 0, //our script will add this????
             gasLimit: 500000,
-            link: address(linkToken)//we need to deploy a mocked link token?
+            link: address(linkToken),//we need to deploy a mocked link token?
             //Chainlink contract verion link?
+            privateKey: ANVIL_PRIVATE_KEY
 
         });
 

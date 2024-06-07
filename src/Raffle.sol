@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity ^0.8.0;
-import {VRFCoordinatorV2Interface} from "@chainlink/contracts/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol";
-import {VRFConsumerBaseV2} from "@chainlink/contracts/v0.8/vrf/VRFConsumerBaseV2.sol";
-import {AutomationCompatibleInterface} from "@chainlink/contracts/v0.8/interfaces/AutomationCompatibleInterface.sol";
+import {VRFCoordinatorV2Interface} from "@chainlink/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol";
+import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
+import {AutomationCompatibleInterface} from "@chainlink/contracts/src/v0.8/interfaces/AutomationCompatibleInterface.sol";
+import {VRFConsumerBaseV2Plus} from "@chainlink/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
+import {IVRFCoordinatorV2Plus} from "@chainlink/contracts/src/v0.8/vrf/dev/interfaces/IVRFCoordinatorV2Plus.sol";
+import {VRFV2PlusClient} from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol";
 
 
 
@@ -23,6 +26,7 @@ error Raffle_RaffleNotOpen();
     }
 
     VRFCoordinatorV2Interface private immutable i_vrfCoordinator;
+    IVRFCoordinatorV2Plus private s_vrfCoordinator;
 
     //Basic enter fee, user address(last winner record), between time and start time
     uint256 private immutable i_enterRaffleFee;
@@ -41,7 +45,7 @@ error Raffle_RaffleNotOpen();
     * 5. how many random number you want to have in one request
     */
     bytes32 private immutable i_gasLane;
-    uint64 private immutable i_subscribtionId;
+    uint256 private immutable i_subscribtionId;
     uint16 private constant REQUEST_CONFIRMATION = 3;
     uint32 private immutable i_gasLimit;
     uint32 private constant NUMWORDS = 1;
@@ -59,7 +63,7 @@ error Raffle_RaffleNotOpen();
                 uint256 interval, 
                 bytes32 gasLane,
                 address vrfCoordinator,
-                uint64 subscribtionId,
+                uint256 subscribtionId,
                 uint32 gasLimit) VRFConsumerBaseV2(vrfCoordinator){
         i_enterRaffleFee = enterRaffleFee;
         i_interval = interval;
@@ -103,12 +107,27 @@ error Raffle_RaffleNotOpen();
         // }
         // This is just done the request, now we have to get the nubmer back
         // So this is the step one, now we have to have the step 2 to get the number back
-        requestId = i_vrfCoordinator.requestRandomWords(
-            i_gasLane, 
-            i_subscribtionId, 
-            REQUEST_CONFIRMATION, 
-            i_gasLimit, 
-            NUMWORDS
+        // requestId = i_vrfCoordinator.requestRandomWords(
+        //     i_gasLane, 
+        //     i_subscribtionId, 
+        //     REQUEST_CONFIRMATION, 
+        //     i_gasLimit, 
+        //     NUMWORDS
+        // );
+        
+        requestId = s_vrfCoordinator.requestRandomWords(
+            VRFV2PlusClient.RandomWordsRequest({
+                keyHash: i_gasLane,
+                subId: i_subscribtionId,
+                requestConfirmations: REQUEST_CONFIRMATION,
+                callbackGasLimit: i_gasLimit,
+                numWords: NUMWORDS,
+                extraArgs: VRFV2PlusClient._argsToBytes(
+                    VRFV2PlusClient.ExtraArgsV1({
+                        nativePayment: false
+                    })
+                )
+            })
         );
     }
     //the request ID in the parameter should be the same we have in the above fucntion

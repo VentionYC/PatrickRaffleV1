@@ -2,7 +2,8 @@
 pragma solidity ^0.8.18;
 import {Script, console} from "forge-std/Script.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
-import {VRFCoordinatorV2Mock} from "@chainlink/contracts/v0.8/mocks/VRFCoordinatorV2Mock.sol";
+import {VRFCoordinatorV2Mock} from "@chainlink/contracts/src/v0.8/mocks/VRFCoordinatorV2Mock.sol";
+import {VRFCoordinatorV2_5Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
 import {LinkToken} from "../test/mocks/LinkToken.sol";
 import {DevOpsTools} from "lib/foundry-devops/src/DevOpsTools.sol";
 contract CreateSub is Script{
@@ -14,7 +15,7 @@ contract CreateSub is Script{
         //Let do the thing that front end will do,
         //which is call the createsubscribtion then add the raffle to the cosumer
         HelperConfig helperConfig = new HelperConfig();
-        ( , , , address vrfCoordinator, , , )= helperConfig.actviceNetWorkConfig();
+        ( , , , address vrfCoordinator, , , ,)= helperConfig.actviceNetWorkConfig();
         return createSubscription(vrfCoordinator);
     }
 
@@ -47,16 +48,18 @@ contract FundSub is Script{
 
         HelperConfig helperConfig = new HelperConfig();
         ( , , , address vrfCoordinator, 
-                uint64 subscribtionId, ,
-                address link )= helperConfig.actviceNetWorkConfig();
+                uint256 subscribtionId, ,
+                address link,
+                uint256 privateKey  )= helperConfig.actviceNetWorkConfig();
 
-        fundSubcription(vrfCoordinator, subscribtionId, link);
+        fundSubcription(vrfCoordinator, subscribtionId, link, privateKey);
 
     }
 
     function fundSubcription(address vrfCoordinator, 
-                            uint64 subId, 
-                            address linktoken) public{
+                            uint256 subId, 
+                            address linktoken,
+                            uint256 privateKey) public{
         console.log("Funding subid " , subId);
         console.log("VRF " , vrfCoordinator);
         console.log("on Chain ID " , block.chainid);
@@ -65,7 +68,10 @@ contract FundSub is Script{
             //Between vm.startBroadcast and vm.stopBroadcast, 
             //you should deploy your contracts and make any necessary transactions.
             //fundSubscription didn't exsit on the real contract
-            VRFCoordinatorV2Mock(vrfCoordinator).fundSubscription(subId, FUND_AMOUNT);
+            //2.0
+            //VRFCoordinatorV2Mock(vrfCoordinator).fundSubscription(subId, FUND_AMOUNT);
+            //2.5
+            VRFCoordinatorV2_5Mock(vrfCoordinator).fundSubscription(subId, FUND_AMOUNT);
             vm.stopBroadcast();  
         }else{
             //do the real transfer here
@@ -101,16 +107,22 @@ contract AddCustomer is Script {
 
         HelperConfig helperConfig = new HelperConfig();
         ( , , ,address vrfCoordinator 
-            ,uint64 subscribtionId , , )= helperConfig.actviceNetWorkConfig();
+            ,uint256 subscribtionId , , 
+            ,uint256 privateKey )= helperConfig.actviceNetWorkConfig();
 
-        addCustomer(vrfCoordinator, subscribtionId, owner);
+        addCustomer(vrfCoordinator, subscribtionId, owner, privateKey);
     }
 
     function addCustomer(address vrfCoordinator,
-                         uint64 subId,
-                         address contractAddress) public{
-                            vm.startBroadcast();
-                            VRFCoordinatorV2Mock(vrfCoordinator).addConsumer(subId, contractAddress);
+                         uint256 subId,
+                         address contractAddress,
+                         uint256 privateKey) public{
+                            vm.startBroadcast(privateKey);
+                            //2.0
+                            //VRFCoordinatorV2Mock(vrfCoordinator).addConsumer(subId, contractAddress);
+                            //2.5
+                            //VRFCoordinatorV2_5Mock is SubscriptionAPI which have the addconcumer function
+                            VRFCoordinatorV2_5Mock(vrfCoordinator).addConsumer(subId, contractAddress);
                             vm.stopBroadcast();
                          }
 }
