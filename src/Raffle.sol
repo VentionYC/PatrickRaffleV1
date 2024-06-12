@@ -25,6 +25,7 @@ error Raffle_RaffleNotOpen();
         CALCULATING
     }
 
+    // hello there forget to code?
     VRFCoordinatorV2Interface private immutable i_vrfCoordinator;
     IVRFCoordinatorV2Plus private s_vrfCoordinator;
 
