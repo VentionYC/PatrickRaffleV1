@@ -10,7 +10,7 @@ import {VRFV2PlusClient} from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/V
 
 
 
-contract Raffle is VRFConsumerBaseV2, AutomationCompatibleInterface{
+contract Raffle is AutomationCompatibleInterface, VRFConsumerBaseV2Plus {
 //the cumtom error should be inside in order for other contract to access or say test
     error theEnterFeeisNotEnough();
     error theWinnerWithdrawFailed();
@@ -27,7 +27,7 @@ error Raffle_RaffleNotOpen();
 
     // hello there forget to code?
     VRFCoordinatorV2Interface private immutable i_vrfCoordinator;
-    IVRFCoordinatorV2Plus private s_vrfCoordinator;
+   // IVRFCoordinatorV2Plus private s_vrfCoordinator;
 
     //Basic enter fee, user address(last winner record), between time and start time
     uint256 private immutable i_enterRaffleFee;
@@ -65,7 +65,7 @@ error Raffle_RaffleNotOpen();
                 bytes32 gasLane,
                 address vrfCoordinator,
                 uint256 subscribtionId,
-                uint32 gasLimit) VRFConsumerBaseV2(vrfCoordinator){
+                uint32 gasLimit) VRFConsumerBaseV2Plus(vrfCoordinator){
         i_enterRaffleFee = enterRaffleFee;
         i_interval = interval;
         s_timestamp = block.timestamp;
@@ -132,7 +132,7 @@ error Raffle_RaffleNotOpen();
         );
     }
     //the request ID in the parameter should be the same we have in the above fucntion
-    function fulfillRandomWords(uint256 /*requestId*/, uint256[] memory randomWords) internal override{
+    function fulfillRandomWords(uint256 /*requestId*/, uint256[] calldata randomWords) internal override{
         uint256 indexOfWinner = randomWords[0] % s_userAddress.length;
         address payable winner = s_userAddress[indexOfWinner];
         s_recentWinner = winner;
@@ -186,8 +186,23 @@ error Raffle_RaffleNotOpen();
         }
 
         s_raffleState = RaffleState.CALCULATING;
-        uint256 requestId = pickWinner();
+        //uint256 requestId = pickWinner();
         //the request ID is already emit by the requestrandomwords, this is just for the test showing
+
+            uint256 requestId = s_vrfCoordinator.requestRandomWords(
+            VRFV2PlusClient.RandomWordsRequest({
+                keyHash: i_gasLane,
+                subId: i_subscribtionId,
+                requestConfirmations: REQUEST_CONFIRMATION,
+                callbackGasLimit: i_gasLimit,
+                numWords: NUMWORDS,
+                extraArgs: VRFV2PlusClient._argsToBytes(
+                    VRFV2PlusClient.ExtraArgsV1({
+                        nativePayment: false
+                    })
+                )
+            })
+        );
         emit RequestRaffleWinner(requestId);
 
 
