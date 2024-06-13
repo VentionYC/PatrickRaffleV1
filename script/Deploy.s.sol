@@ -41,7 +41,7 @@ contract DeployRaffle is Script {
             CreateSub createSub = new CreateSub();
             FundSub fundSub = new FundSub();
             
-            subscribtionId = createSub.createSubscription(vrfCoordinator);
+            subscribtionId = createSub.createSubscription(vrfCoordinator,privateKey);
             // Now we have to fund it!!!
             // let's crate another contract in interaction ?
             fundSub.fundSubcription(vrfCoordinator,subscribtionId,link,privateKey);
@@ -51,7 +51,7 @@ contract DeployRaffle is Script {
     
         }
 
-        vm.startBroadcast();
+        vm.startBroadcast(privateKey);
         Raffle raffle = new Raffle(
             enterRaffleFee,
             interval,

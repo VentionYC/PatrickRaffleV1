@@ -7,6 +7,7 @@ import {Test, console} from "forge-std/Test.sol";
 import {HelperConfig} from "../../script/HelperConfig.s.sol";
 import {Vm} from "forge-std/Vm.sol";
 import {VRFCoordinatorV2Mock} from "@chainlink/contracts/src/v0.8/mocks/VRFCoordinatorV2Mock.sol";
+import {VRFCoordinatorV2_5Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
 
 contract RaffleTest is Test {
     event EnteredUser(address indexed user);
@@ -304,24 +305,24 @@ Error (2271): Built-in binary operator == cannot be applied to types uint256 and
         //Arrange
         // in the fulfillRandomWordsWithOverride in Mock
         // if there is no subID, then it will review below
-        vm.expectRevert("nonexistent request");
+        vm.expectRevert(VRFCoordinatorV2_5Mock.InvalidRequest.selector);
         
         //VRFCoordinatorV2Mock(vrfCoordinator).fulfillRandomWords(0, address(raffle));
         //Since there is no real subID, so no matter what the subID here is
         //it all should revert
         //So we should test all the nubmers
-        VRFCoordinatorV2Mock(vrfCoordinator).fulfillRandomWords(11, address(raffle));
+        VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(11, address(raffle));
     }
 
     //so let's try to add the parameter to a test
     //[PASS] testFullfillRandomWordsCanOnlyBeCalledAfterPerfomUpkeepWithPara(uint256) (runs: 257, μ: 80549, ~: 80549)
     function testFullfillRandomWordsCanOnlyBeCalledAfterPerfomUpkeepWithPara(uint256 randomRequest)
                 public raffleEnteredAndTimePassed {
-                    vm.expectRevert("nonexistent request");
+                    vm.expectRevert(VRFCoordinatorV2_5Mock.InvalidRequest.selector);
                     //pretend to be the fake VRF can only work in local Chain
                     //in test net or main net
                     //Only the real VRF can call the fulfillRandomwords
-                    VRFCoordinatorV2Mock(vrfCoordinator).fulfillRandomWords(randomRequest, address(raffle));
+                    VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(randomRequest, address(raffle));
     }
 
     ///////////////////////
@@ -363,7 +364,7 @@ Error (2271): Built-in binary operator == cannot be applied to types uint256 and
                 bytes32 requestId = entries[1].topics[1];
                 uint256 previousLastTimestamp = raffle.getLastTimeStamp();
                 // pretend to be chainlink vrf to get random number & pick winner
-                VRFCoordinatorV2Mock(vrfCoordinator).fulfillRandomWords(uint256(requestId), address(raffle));
+                VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(uint256(requestId), address(raffle));
                 console.log("timestamp 1 ", previousLastTimestamp);
                 //assert 
                 assert(uint256(raffle.getRaffleState()) == 0);

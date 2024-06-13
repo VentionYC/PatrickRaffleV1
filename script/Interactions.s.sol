@@ -9,21 +9,21 @@ import {DevOpsTools} from "lib/foundry-devops/src/DevOpsTools.sol";
 contract CreateSub is Script{
     //Doing like this is for the sack of the modularity
 
-    function createSubUsingConfig() public returns (uint64) {
+    function createSubUsingConfig() public returns (uint256) {
         //Using the helper config
         //openchain.xyz HeX to method
         //Let do the thing that front end will do,
         //which is call the createsubscribtion then add the raffle to the cosumer
         HelperConfig helperConfig = new HelperConfig();
-        ( , , , address vrfCoordinator, , , ,)= helperConfig.actviceNetWorkConfig();
-        return createSubscription(vrfCoordinator);
+        ( , , , address vrfCoordinator, , , ,uint256 privateKey)= helperConfig.actviceNetWorkConfig();
+        return createSubscription(vrfCoordinator, privateKey);
     }
 
-    function createSubscription(address vrfCoordinator) public returns(uint64) {
+    function createSubscription(address vrfCoordinator, uint256 privateKey) public returns(uint256) {
         console.log("the block id is " , block.chainid);
-        uint64 subId;
-        vm.startBroadcast();
-            subId = VRFCoordinatorV2Mock(vrfCoordinator).createSubscription();
+        uint256 subId;
+        vm.startBroadcast(privateKey);
+            subId = VRFCoordinatorV2_5Mock(vrfCoordinator).createSubscription();
         vm.stopBroadcast();
         console.log("your sub id is ", subId);
         return subId;
@@ -33,7 +33,7 @@ contract CreateSub is Script{
 
     
     //run() return the sub ID
-    function run() external returns (uint64){
+    function run() external returns (uint256){
         return createSubUsingConfig();
     }
 }
@@ -64,7 +64,7 @@ contract FundSub is Script{
         console.log("VRF " , vrfCoordinator);
         console.log("on Chain ID " , block.chainid);
         if (block.chainid ==  LOCAL_CHAIN_ID) {
-            vm.startBroadcast();
+            vm.startBroadcast(privateKey);
             //Between vm.startBroadcast and vm.stopBroadcast, 
             //you should deploy your contracts and make any necessary transactions.
             //fundSubscription didn't exsit on the real contract
@@ -76,7 +76,7 @@ contract FundSub is Script{
         }else{
             //do the real transfer here
             //This is on the test net?
-            vm.startBroadcast();
+            vm.startBroadcast(privateKey);
            //don't worry about what this is doing for now
             LinkToken(linktoken).transferAndCall(vrfCoordinator, 
                                                 FUND_AMOUNT, 
