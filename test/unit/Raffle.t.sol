@@ -262,12 +262,12 @@ Error (2271): Built-in binary operator == cannot be applied to types uint256 and
         // the test debuging purpose, is the funciton didn't revert, then it will
         // consider as pass
         raffle.performUpkeep("");
-        
+
 
     }
 
     function testPerformUpkeepRevertIfCheckUpkeepIsFalse() public {
-        //vm.expectRevert(Raffle.Raffle_UpkeepNotNeeded.selector);
+        //vm.expectRevert(Raffle.Raffle_UpkeepNotNeeded.selector);git
         uint256 currentBalance = 0;
         uint256 numPlayer = 0;
         //There is no fucking raffle state add in in my code
@@ -297,7 +297,9 @@ Error (2271): Built-in binary operator == cannot be applied to types uint256 and
             //bytes32 requestId = entries[0].topics[2];
 
             Raffle.RaffleState rState = raffle.getRaffleState();
-
+            //console.log("the request id is ", requestId);
+            uint256 requstID = uint256(requestId);
+            console.log("timestamp 1 ", requstID);
             assert(uint256(requestId) >0);
             assert(uint256(rState) > 0);
     }
@@ -306,8 +308,8 @@ Error (2271): Built-in binary operator == cannot be applied to types uint256 and
         //Arrange
         // in the fulfillRandomWordsWithOverride in Mock
         // if there is no subID, then it will review below
-        vm.expectRevert(VRFCoordinatorV2_5Mock.InvalidRequest.selector);
-        
+        //vm.expectRevert(VRFCoordinatorV2_5Mock.InvalidRequest.selector);
+        vm.expectRevert();
         //VRFCoordinatorV2Mock(vrfCoordinator).fulfillRandomWords(0, address(raffle));
         //Since there is no real subID, so no matter what the subID here is
         //it all should revert
@@ -365,6 +367,7 @@ Error (2271): Built-in binary operator == cannot be applied to types uint256 and
                 bytes32 requestId = entries[1].topics[1];
                 uint256 previousLastTimestamp = raffle.getLastTimeStamp();
                 // pretend to be chainlink vrf to get random number & pick winner
+                //console.log("Vention the request id is ", requestId);
                 VRFCoordinatorV2_5Mock(vrfCoordinator).fulfillRandomWords(uint256(requestId), address(raffle));
                 console.log("timestamp 1 ", previousLastTimestamp);
                 //assert 

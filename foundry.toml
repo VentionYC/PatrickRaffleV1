@@ -9,3 +9,6 @@ remappings = [
   '@chainlink/contracts/=lib/chainlink-brownie-contracts/contracts/',
   '@solmate/tokens/=lib/solmate/src/tokens'
 ]
+
+[rpc_endpoints]
+sepolia = "${SEPOLIA_RPC_URL}"
