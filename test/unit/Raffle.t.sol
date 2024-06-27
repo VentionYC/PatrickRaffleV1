@@ -33,20 +33,25 @@ contract RaffleTest is Test {
     }
 
     function setUp() external {
-        //Using the script to deploy
         DeployRaffle deployer = new DeployRaffle();
-        //helper = new HelperConfig();
         (raffle, helper) = deployer.run();
-        (
-                 enterRaffleFee,
-                 interval,
-                 gasLane,
-                 vrfCoordinator,
-                 subscribtionId,
-                 gasLimit,
-                 link,
-                 privateKey
-        )= helper.actviceNetWorkConfig();
+        //Two step here to prevent this Error
+        /*Error: Compiler error (/solidity/libsolidity/codegen/CompilerUtils.cpp:1430):Stack too deep. 
+        Try compiling with `--via-ir` (cli) or the equivalent `viaIR: true` (standard JSON) while enabling the optimizer. 
+        Otherwise, try removing local variables.
+        CompilerError: Stack too deep. 
+        Try compiling with `--via-ir` (cli) or the equivalent `viaIR: true` (standard JSON) while enabling the optimizer. 
+        Otherwise, try removing local variables.*/
+        (enterRaffleFee,
+         interval,
+         gasLane,
+         vrfCoordinator,,,,)= helper.actviceNetWorkConfig();
+
+        (,,,,
+         subscribtionId,
+         gasLimit,
+         link,
+         privateKey)= helper.actviceNetWorkConfig();
         vm.deal(PLAYER, STARTING_BALANCE);
     }
 
@@ -112,7 +117,7 @@ Error (2271): Built-in binary operator == cannot be applied to types uint256 and
         //expectRevert Error message inside ()
         // expectRevert is used to set an expectation that 
         //the next function call should revert with a specific error
-        vm.expectRevert(Raffle.theEnterFeeisNotEnough.selector);
+        vm.expectRevert(Raffle.Raffle_TheEnterFeeisNotEnough.selector);
         //raffle.enterRaffle{value: 3 ether}();
         raffle.enterRaffle();
         

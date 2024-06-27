@@ -11,9 +11,9 @@ import {VRFV2PlusClient} from "@chainlink/contracts/src/v0.8/vrf/dev/libraries/V
 
 
 contract Raffle is AutomationCompatibleInterface, VRFConsumerBaseV2Plus {
-//the cumtom error should be inside in order for other contract to access or say test
-    error theEnterFeeisNotEnough();
-    error theWinnerWithdrawFailed();
+
+    error Raffle_TheEnterFeeisNotEnough();
+    error Raffle_TheWinnerWithdrawFailed();
     error Raffle_UpkeepNotNeeded(
         uint256 contractBalance,
         uint256 userCount
@@ -25,7 +25,6 @@ contract Raffle is AutomationCompatibleInterface, VRFConsumerBaseV2Plus {
         CALCULATING
     }
 
-    //Basic enter fee, user address(last winner record), between time and start time
     uint256 private immutable i_enterRaffleFee;
     address payable[] private s_userAddress;
     uint256 private immutable i_interval;
@@ -37,9 +36,9 @@ contract Raffle is AutomationCompatibleInterface, VRFConsumerBaseV2Plus {
     * 1. the address of the vrfcoordinator (based on diff network)
     * 2. the gas lane (base on diff network get from chainlink)
     * 3. the subscribtion id
-    * +++ the number of request confirmation
-    * 4. call back gas limit
-    * 5. how many random number you want to have in one request
+    * 4. the number of request confirmation
+    * 5. call back gas limit
+    * 6. how many random number you want to have in one request
     */
     bytes32 private immutable i_gasLane;
     uint256 private immutable i_subscribtionId;
@@ -76,7 +75,7 @@ contract Raffle is AutomationCompatibleInterface, VRFConsumerBaseV2Plus {
         //the unit of msg.value is Wei
         //require(msg.value >= i_enterRaffleFee, "the enter fee is not enough");
         if(msg.value < i_enterRaffleFee){
-            revert theEnterFeeisNotEnough();
+            revert Raffle_TheEnterFeeisNotEnough();
         }else if (s_raffleState != RaffleState.OPEN) {
             revert Raffle_RaffleNotOpen();
         }else{
@@ -134,7 +133,7 @@ contract Raffle is AutomationCompatibleInterface, VRFConsumerBaseV2Plus {
         // to be continue
         (bool success, ) = winner.call{value: address(this).balance}("");
         if(!success) {
-            revert theWinnerWithdrawFailed();
+            revert Raffle_TheWinnerWithdrawFailed();
         }else{
             s_raffleState = RaffleState.OPEN;
         }

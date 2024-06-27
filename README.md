@@ -1,4 +1,10 @@
+# Solidity Grammar
+ ## Custom Error
+   * The custom error should be insdie the contract in order for other contract to access or to test.
 
+# Solidity Compile
+ ## --via -ir Error
+   * Using the (,,,,) to hide the useless parameter
 # Solidity formate
  ## Payable modifier
     * It's meant for receive but not send Ether, address.. function...
@@ -22,10 +28,3 @@
  6. internal
  7. private
  8. view & pure functions
-
-# Foundry
- ## Function
-    * makeAddr
- ## Cheatcode
-  ### Give me some money!
-    * vm.deal(address, uint256)
